@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -504,10 +503,10 @@
         <span class="text-[#64748b] text-sm hidden sm:inline ml-1">· guía docente</span>
       </div>
       <div class="flex items-center gap-3">
-        <a href="https://wa.me/59170000000?text=Hola!%20Estoy%20consultando%20la%20guía%20de%20docentes%20FICCTHACK"
+        <a href="https://chat.whatsapp.com/KxqQX0HUEJM20s3gIhQtUI"
           target="_blank" class="btn-whatsapp hidden sm:inline-flex">
           <i class='bx bxl-whatsapp text-lg'></i>
-          WhatsApp
+          Unirse al Grupo
         </a>
         <span class="w-px h-6 bg-[#334155] hidden sm:block"></span>
         <span class="text-[#64748b] text-sm font-medium" id="totalCount">Cargando...</span>
@@ -552,6 +551,8 @@
             <option value="6">Semestre 6</option>
             <option value="7">Semestre 7</option>
             <option value="8">Semestre 8</option>
+            <option value="9">Semestre 9</option>
+            <option value="E">Electivas</option>
           </select>
           <select id="filterRecomendado" class="text-sm">
             <option value="">Todos</option>
@@ -670,11 +671,11 @@
           <span>·</span>
           <span>Sin base de datos</span>
         </div>
-        <a href="https://wa.me/59170000000?text=Hola!%20Estoy%20consultando%20la%20guía%20de%20docentes%20FICCTHACK"
-          target="_blank" class="btn-whatsapp text-sm">
-          <i class='bx bxl-whatsapp text-lg'></i>
-          Contactar
-        </a>
+          <a href="https://chat.whatsapp.com/KxqQX0HUEJM20s3gIhQtUI"
+            target="_blank" class="btn-whatsapp hidden sm:inline-flex">
+            <i class='bx bxl-whatsapp text-lg'></i>
+            Grupo WhatsApp
+          </a>
       </div>
       <div class="text-center text-[#475569] text-[10px] mt-4">
         © 2025 FICCTHACK · Todos los derechos reservados
@@ -720,6 +721,125 @@
     let filteredData = [];
     let currentPage = 1;
     const itemsPerPage = 9;
+
+    // ============================================================
+    // MAPA MATERIA -> SEMESTRE
+    // Extraído de "RECOMENDACIÓN DOCENTE — FICCT 2/2026".
+    // Las claves están escritas EXACTAMENTE como aparecen en data.json
+    // (algunas sin tildes/ñ o con "1" en vez de "I", tal cual el dataset).
+    // Los valores son arrays porque 4 materias se repiten en dos mallas
+    // distintas dentro del documento (se muestran como "Sem X / Y").
+    // 'E' = Electivas.
+    // ============================================================
+    const SEMESTER_MAP = {
+      // Semestre 1
+      'CÁLCULO 1': [1],
+      'ESTRUCTURAS DISCRETAS': [1],
+      'FÍSICA I': [1],
+      'INGLÉS TÉCNICO I': [1],
+      'INTRODUCCIÓN A LA INFORMÁTICA': [1],
+      'DIBUJO MECÁNICO EN CAD': [1],
+      'INTRODUCCIÓN A LA ROBÓTICA': [1],
+      'MET. DE LA INVESTIGACIÓN': [1],
+      // Semestre 2
+      'ALGEBRA LINEAL': [2],
+      'CALCULO II': [2],
+      'FISICA II': [2],
+      'INGLÉS TÉCNICO II': [2],
+      'PROGRAMACIÓN I': [2],
+      'ESTÁTICA': [2],
+      'PENSAMIENTO CRÍTICO Y CREATIVO': [2],
+      // Semestre 3
+      'ADMINISTRACIÓN': [3],
+      'ANÁLISIS DE CIRCUITOS': [3],
+      'DINAMICA': [3],
+      'ECUACIONES DIFERENCIALES': [3],
+      'FISICA III': [3],
+      'PROGRAMACIÓN II': [3],
+      'TEORIA DE CAMPOS': [3],
+      'TECNOLOGÍA DE LA MANUFACTURA': [3],
+      'ELECTRICIDAD Y MAGNETISMO': [3],
+      // Semestre 4
+      'ANAL, CIRCUITOS ELECTRÓNICOS': [4],
+      'CONTABILIDAD': [4],
+      'CRIPTOGRAFÍA Y SEGURIDAD': [4],
+      'ESTRUCTURA DE DATOS I': [4],
+      'MÉTODOS NUMÉRICOS': [4],
+      'PROBABILIDADES Y ESTADÍST. I': [4],
+      'PROGRAMACIÓN ENSAMBLADOR': [4],
+      // Semestre 5
+      'DISEÑO CIRC. INTEGRADOS': [5],
+      'ECONOMÍA PARA LA GESTIÓN': [5],
+      'ELECTRON. APLICADA A REDES': [5],
+      'ESTRUCTURAS DE DATOS II': [5],
+      'LENGUAJES FORMALES': [5],
+      'ORGANIZACIÓN Y MÉTODOS': [5],
+      'PROBABILIDADES Y ESTADÍST. II': [5],
+      'PROG. LOGICA Y FUNCIONAL': [5],
+      'SENALES Y SISTEMAS': [5],
+      'SIST. LÓGICOS Y DIGITALES I': [5],
+      // Semestre 6
+      'BASES DE DATOS II': [6],
+      'COMPILADORES': [6],
+      'FINANZAS PARA LA EMPRESA': [6],
+      'INVESTIGACIÓN OPERATIVA I': [6],
+      'SISTEMAS DE INFORMACIÓN I': [6],
+      'SIST. LOGICOS Y DIGITALES II': [6],
+      'INTERPRETACIÓN DE SENALES': [6],
+      'SIST. DE COM. SCADA': [6],
+      // Semestre 7
+      'INTELIGENCIA ARTIFICIAL': [7],
+      'INVESTIGACIÓN OPERATIVA II': [7],
+      'REDES I': [7],
+      'SISTEMAS DE INFORMACIÓN II': [7],
+      'SISTEMAS OPERATIVOS II': [7],
+      'APLIC. CON MICROPROCESADORES': [7],
+      'LÍNEAS DE TRANSMISIÓN Y ANTENAS': [7],
+      'SISTEMAS DE COMUNICACIÓN I': [7],
+      'SIST. PARA LA TOMA DE DECISIONES': [7],
+      // Semestre 8
+      'AUDITORÍA INFORMÁTICA': [8],
+      'INGENIERÍA DE SOFTWARE 1': [8],
+      'PREP. Y EVAL. DE PROYECTOS': [8],
+      'REDES II': [8],
+      'SIST. DE INF. GEOGRÁFICA': [8],
+      'SISTEMAS EXPERTOS': [8],
+      // Semestre 9
+      'ARQUITECTURA DEL SOFTWARE': [9],
+      'GESTIÓN Y ADM. DE REDES': [9],
+      'INGENIERÍA DE SOFTWARE II': [9],
+      'REDES INALÁMB. Y COM. MÓVILES': [9],
+      'TECNOLOGÍA WEB': [9],
+      'TALLER DE GRADO I': [9],
+      'SEGURIDAD EN REDES Y TX DE DATOS': [9],
+      // Electivas
+      'INGENIERIA DE LA CALIDAD': ['E'],
+      'COSTOS Y PRESUPUESTOS': ['E'],
+      'PRODUCCIÓN Y MARKETING': ['E'],
+      'LEGISLACIÓN DE REDES': ['E'],
+      'REDES ADHOC': ['E'],
+      'SISTEMAS DE COMUNICACIÓN II': ['E'],
+      'TALLER ANÁLISIS Y DISEÑO REDES': ['E'],
+      'INTERACCIÓN HOMBRE-COMPUTADOR': ['E'],
+      'TOPIC. AVANC. PROGRAMAC.': ['E'],
+      'PROGRAMACIÓN GRÁFICA': ['E'],
+      'LEG. EN CS. DE LA COMP.': ['E'],
+      // Materias que se repiten en dos mallas/gestiones distintas
+      'ARQUITECTURA DE COMPUTADORAS': [1, 3],
+      'BASE DE DATOS I': [2, 5],
+      'SISTEMAS OPERATIVOS I': [2, 6],
+      'TELEVISIÓN DIGITAL': [6, 'E'],
+    };
+
+    function getSemestres(materia) {
+      return SEMESTER_MAP[materia] || [];
+    }
+
+    function formatSemestres(materia) {
+      const sems = getSemestres(materia);
+      if (sems.length === 0) return 'N/A';
+      return sems.map(s => s === 'E' ? 'Electiva' : `Sem ${s}`).join(' / ');
+    }
 
     // ============================================================
     // FUNCIONES AUXILIARES
@@ -823,8 +943,12 @@
               </span>
             </div>
 
-            <p class="text-[#14b8a6] text-sm font-medium mb-2">
+            <p class="text-[#14b8a6] text-sm font-medium mb-1">
               <i class='bx bx-user text-[#14b8a6] mr-1'></i>${item.Docente}
+            </p>
+
+            <p class="text-[#64748b] text-xs mb-2">
+              <i class='bx bx-calendar text-[#64748b] mr-1'></i>${formatSemestres(item.Materia)}
             </p>
 
             <div class="flex items-center gap-2 mb-1">
@@ -977,10 +1101,9 @@
       const materias = allData.length;
       const docentes = new Set(allData.map(d => d.Docente)).size;
       const recomendados = allData.filter(d => (d.Pasar !== null && d.Pasar >= 3) || (d.Enseñanza !== null && d.Enseñanza >= 3)).length;
-      const semestres = new Set(allData.map(d => {
-        const match = d.Materia.match(/\b(I{0,3}V?I?I?|V?I?I?)\b/);
-        return match ? match[0] : 'N/A';
-      })).size;
+      const semestresSet = new Set();
+      allData.forEach(d => getSemestres(d.Materia).forEach(s => semestresSet.add(s)));
+      const semestres = semestresSet.size;
 
       document.getElementById('statMaterias').textContent = materias;
       document.getElementById('statDocentes').textContent = docentes;
@@ -995,6 +1118,8 @@
     function filterData() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const recomendado = document.getElementById('filterRecomendado').value;
+      const semestre = document.getElementById('filterSemestre').value;
+      const dificultad = document.getElementById('filterDificultad').value;
       const sortBy = document.getElementById('sortSelect').value;
 
       filteredData = allData.filter(item => {
@@ -1008,6 +1133,16 @@
           const rec = recomendado === 'true';
           const esRecomendado = (item.Pasar !== null && item.Pasar >= 3) || (item.Enseñanza !== null && item.Enseñanza >= 3);
           if (esRecomendado !== rec) return false;
+        }
+        if (semestre !== '') {
+          const semVal = semestre === 'E' ? 'E' : parseInt(semestre, 10);
+          const sems = getSemestres(item.Materia);
+          if (!sems.includes(semVal)) return false;
+        }
+        if (dificultad !== '') {
+          const nivel = parseInt(dificultad, 10);
+          const pasar = item.Pasar !== null ? item.Pasar : 3;
+          if (pasar !== nivel) return false;
         }
         return true;
       });
@@ -1055,8 +1190,12 @@
             </span>
           </div>
 
-          <p class="text-[#14b8a6] text-lg font-medium mb-4">
+          <p class="text-[#14b8a6] text-lg font-medium mb-1">
             <i class='bx bx-user mr-2'></i>${item.Docente}
+          </p>
+
+          <p class="text-[#64748b] text-sm mb-4">
+            <i class='bx bx-calendar mr-2'></i>${formatSemestres(item.Materia)}
           </p>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
